@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    "helm.sh/hook": "pre-delete"
+  name: azure-arc-remove
+  namespace: {{ .Values.namespace }}
+spec:
+  template:
+    spec:
+      serviceAccountName: azure-arc-onboarding
+      automountServiceAccountToken: true
+      containers:
+      - image: quay.io/kinvolk/az-cli-test
+        name: install-azure-arc
+        imagePullPolicy: Always
+        args:
+          - sh
+          - -c
+          - bash /azure-arc/script.sh remove
+        env:
+          - name: AZURE_APPLICATION_CLIENT_ID
+            value: {{ .Values.applicationClientID }}
+          - name: AZURE_APPLICATION_PASSWORD
+            value: {{ .Values.applicationPassword }}
+          - name: AZURE_TENANT_ID
+            value: {{ .Values.tenantID }}
+          - name: CONNECTED_CLUSTER_NAME
+            value: {{ .Values.clusterName }}
+          - name: AZURE_RESOURCE_GROUP
+            value: {{ .Values.resourceGroup }}
+      restartPolicy: Never
