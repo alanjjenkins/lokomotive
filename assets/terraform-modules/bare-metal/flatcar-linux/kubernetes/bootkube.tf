@@ -22,7 +22,7 @@ module "bootkube" {
   disable_self_hosted_kubelet = var.disable_self_hosted_kubelet
 
   bootstrap_tokens     = [local.controller_bootstrap_token, local.worker_bootstrap_token]
-  enable_tls_bootstrap = true
+  enable_tls_bootstrap = false
   encrypt_pod_traffic  = var.encrypt_pod_traffic
 
   ignore_x509_cn_check = var.ignore_x509_cn_check

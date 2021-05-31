@@ -28,6 +28,33 @@ resource "null_resource" "copy-controller-secrets" {
   }
 
   provisioner "file" {
+    content = yamlencode(
+      {
+        apiVersion: "kubelet.config.k8s.io/v1beta1"
+        kind: "KubeletConfiguration"
+        cgroupDriver: "cgroupfs"
+        authentication: {
+          anonymous: {
+            enabled: "false"
+          }
+          webhook: {
+            enabled: "true"
+            cacheTTL: "2m"
+          }
+        }
+        clientCAFile: "/etc/kubernetes/ca.crt"
+        clusterDomain: [ "cluster.local" ]
+        clusterDNS: [ "10.3.0.10" ]
+        readOnlyPort: 0
+        rotateCertificates: true
+        staticPodPath: "/etc/kubernetes/manifests"
+        volumePluginDir: "/var/lib/kubelet/volumeplugins"
+      }
+    )
+    destination = "$HOME/kubelet.config"
+  }
+
+  provisioner "file" {
     content     = module.bootkube.etcd_ca_cert
     destination = "$HOME/etcd-client-ca.crt"
   }
@@ -65,6 +92,7 @@ resource "null_resource" "copy-controller-secrets" {
   provisioner "remote-exec" {
     inline = [
       "set -e",
+      "sudo mv $HOME/kubelet.config /etc/kubernetes/kubelet.config",
       "sudo mv $HOME/kubeconfig /etc/kubernetes/kubeconfig",
       "sudo chown root:root /etc/kubernetes/kubeconfig",
       "sudo chmod 600 /etc/kubernetes/kubeconfig",
