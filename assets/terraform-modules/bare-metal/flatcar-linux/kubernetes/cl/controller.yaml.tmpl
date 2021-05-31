@@ -106,7 +106,6 @@ systemd:
           --network-plugin=cni \
           --node-labels=$${NODE_LABELS} \
           --register-with-taints=$${NODE_TAINTS} \
-          --volume-plugin-dir=/var/lib/kubelet/volumeplugins
         ExecStart=docker logs -f kubelet
         ExecStop=docker stop kubelet
         ExecStopPost=docker rm kubelet
