@@ -105,7 +105,7 @@ systemd:
           --lock-file=/var/run/lock/kubelet.lock \
           --network-plugin=cni \
           --node-labels=$${NODE_LABELS} \
-          --register-with-taints=$${NODE_TAINTS} \
+          --register-with-taints=$${NODE_TAINTS}
         ExecStart=docker logs -f kubelet
         ExecStop=docker stop kubelet
         ExecStopPost=docker rm kubelet
